@@ -1,10 +1,10 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+name = "reference-manager"
+version = "1.0.0"
+description = "Reference Manager Desktop Application"
+authors = ["Rafael Caetite"]
+license = "MIT"
+repository = "https://github.com/rafaelcaetite/Reference-Manager"
 edition = "2021"
 rust-version = "1.77.2"
 
