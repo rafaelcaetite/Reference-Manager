@@ -1,5 +1,7 @@
 # Reference Manager
 
+> **Live Application**: Access the zero-install web interface at [rafaelcaetite.github.io/Reference-Manager](https://rafaelcaetite.github.io/Reference-Manager/)
+
 Reference Manager is a client-side bibliographic deduplication, normalization, and dataset sanitization application built with React, TypeScript, and Vite. It is designed for researchers conducting systematic literature reviews who must aggregate, clean, and reconcile reference exports from multiple scientific databases, such as Scopus, Web of Science, PubMed, IEEE Xplore, and ACM Digital Library.
 
 All data processing is executed entirely within the user's browser via dedicated Web Workers. No references or bibliographic records are ever transmitted to external servers.
