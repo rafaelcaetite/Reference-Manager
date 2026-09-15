@@ -1,25 +1,22 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React from "react";
+import React, { useRef } from "react";
 
 interface YearHistogramProps {
-  yearCounts: { [year: string]: number };
+  yearCounts: Record<string, number>;
   selectedYears: string[];
   onToggleYear: (year: string) => void;
   onSelectAllYears: () => void;
   onClearAllYears: () => void;
 }
 
-export default function YearHistogram({
+export const YearHistogram: React.FC<YearHistogramProps> = ({
   yearCounts,
   selectedYears,
   onToggleYear,
   onSelectAllYears,
   onClearAllYears,
-}: YearHistogramProps) {
+}) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   const sortedYears = Object.keys(yearCounts).sort((a, b) => {
     const numA = parseInt(a, 10);
     const numB = parseInt(b, 10);
@@ -32,24 +29,23 @@ export default function YearHistogram({
 
   if (sortedYears.length === 0) {
     return (
-      <div className="text-center py-6 text-slate-400 text-sm font-sans" id="no-years-display">
-        Nenhum dado de ano disponível. Carregue um arquivo para visualizar a distribuição temporal.
+      <div className="text-center py-6 text-slate-400 text-xs font-sans">
+        Nenhum dado temporal disponível.
       </div>
     );
   }
 
   return (
-    <div className="space-y-4" id="year-histogram-container">
-      <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <label className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider font-sans">
-          Filtro e Distribuição por Ano
+          Distribuição por Ano
         </label>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
             onClick={onSelectAllYears}
-            className="text-[11px] font-semibold text-[#3B82F6] hover:text-[#2563EB] transition font-sans cursor-pointer"
+            className="text-[11px] font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition font-sans cursor-pointer"
             type="button"
-            id="btn-select-all-years"
           >
             Todos
           </button>
@@ -58,14 +54,16 @@ export default function YearHistogram({
             onClick={onClearAllYears}
             className="text-[11px] font-semibold text-[#6B7280] hover:text-[#1F2937] transition font-sans cursor-pointer"
             type="button"
-            id="btn-clear-all-years"
           >
             Nenhum
           </button>
         </div>
       </div>
 
-      <div className="flex items-end gap-1.5 h-28 pt-2 overflow-x-auto border-b border-slate-100 pb-1" id="years-chart-row">
+      <div
+        ref={scrollContainerRef}
+        className="flex items-end gap-1.5 h-28 pt-2 overflow-x-auto border-b border-slate-100 pb-1 scroll-smooth"
+      >
         {sortedYears.map((year) => {
           const count = yearCounts[year];
           const heightPercent = (count / maxCount) * 100;
@@ -74,20 +72,19 @@ export default function YearHistogram({
           return (
             <div
               key={year}
-              className="flex-1 flex flex-col items-center min-w-[36px] cursor-pointer group"
+              className="flex-1 flex flex-col items-center min-w-[36px] cursor-pointer group select-none"
               onClick={() => onToggleYear(year)}
-              id={`year-bar-${year}`}
             >
               <div className="relative w-full flex items-end justify-center h-20">
                 <div
                   style={{ height: `${heightPercent}%` }}
-                  className={`w-full rounded-t transition-all duration-300 ${
+                  className={`w-full rounded-t transition-all duration-200 ${
                     isSelected
-                      ? "bg-[#3B82F6] hover:bg-[#2563EB]"
+                      ? "bg-[#2563EB] hover:bg-[#1D4ED8]"
                       : "bg-[#E5E7EB] hover:bg-[#D1D5DB]"
                   }`}
                 />
-                <span className="absolute bottom-full mb-1 text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-[#1F2937] text-white opacity-0 group-hover:opacity-100 transition duration-150 pointer-events-none z-10 shadow-sm">
+                <span className="absolute bottom-full mb-1 text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-[#1F2937] text-white opacity-0 group-hover:opacity-100 transition duration-150 pointer-events-none z-10 shadow-xs">
                   {count}
                 </span>
               </div>
@@ -104,4 +101,6 @@ export default function YearHistogram({
       </div>
     </div>
   );
-}
+};
+
+export default YearHistogram;

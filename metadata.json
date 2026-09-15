@@ -1,6 +1,0 @@
-{
-  "name": "CiteSync Pro",
-  "description": "An elegant, clean minimalist CSV bibliography reference deduplication tool that normalizes titles, resolves groups using custom rules, and filters temporal counts.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
