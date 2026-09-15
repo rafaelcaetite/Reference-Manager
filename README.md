@@ -1,10 +1,22 @@
 # Reference Manager
 
-> **Live Application**: Access the zero-install web interface at [rafaelcaetite.github.io/Reference-Manager](https://rafaelcaetite.github.io/Reference-Manager/)
+> **Live Web Application**: [rafaelcaetite.github.io/Reference-Manager](https://rafaelcaetite.github.io/Reference-Manager/)  
+> **Windows Desktop Installer**: Download the latest `.exe` or `.msi` package from [GitHub Releases](https://github.com/rafaelcaetite/Reference-Manager/releases/latest)
 
 Reference Manager is a client-side bibliographic deduplication, normalization, and dataset sanitization application built with React, TypeScript, and Vite. It is designed for researchers conducting systematic literature reviews who must aggregate, clean, and reconcile reference exports from multiple scientific databases, such as Scopus, Web of Science, PubMed, IEEE Xplore, and ACM Digital Library.
 
-All data processing is executed entirely within the user's browser via dedicated Web Workers. No references or bibliographic records are ever transmitted to external servers.
+All data processing is executed entirely within the user's browser or desktop environment via dedicated Web Workers. No references or bibliographic records are ever transmitted to external servers.
+
+---
+
+## Distribution & Execution Options
+
+Reference Manager offers four accessible execution modes depending on user requirements:
+
+1. **Zero-Install Web Application**: Access directly at [rafaelcaetite.github.io/Reference-Manager](https://rafaelcaetite.github.io/Reference-Manager/). Runs locally in modern web browsers without server transmission.
+2. **Native Windows Desktop App (Tauri v2)**: Download the standalone installer (`Reference-Manager_1.0.0_x64-setup.exe`) or Windows package (`Reference-Manager_1.0.0_x64_en-US.msi`) from [Releases](https://github.com/rafaelcaetite/Reference-Manager/releases/latest). Provides native OS window integration, low resource usage, and offline capability.
+3. **One-Click Portable Script (`Reference-Manager.bat`)**: Double-click `Reference-Manager.bat` from the repository root to launch the interface directly into a dedicated application window via Microsoft Edge or Google Chrome `--app` mode without terminal commands.
+4. **Progressive Web App (PWA)**: Open the web application and click the install icon in your browser's address bar to install Reference Manager as a standalone desktop app.
 
 ---
 
