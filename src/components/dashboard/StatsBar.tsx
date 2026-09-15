@@ -11,6 +11,7 @@ interface StatsBarProps {
   startYear?: string;
   endYear?: string;
   onExportCsv: () => void;
+  onExportBibtex?: () => void;
   isExportDisabled: boolean;
 }
 
@@ -24,6 +25,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   startYear,
   endYear,
   onExportCsv,
+  onExportBibtex,
   isExportDisabled,
 }) => {
   return (
@@ -106,15 +108,31 @@ export const StatsBar: React.FC<StatsBarProps> = ({
           </button>
         </div>
 
-        <button
-          onClick={onExportCsv}
-          disabled={isExportDisabled}
-          className="bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer font-sans"
-          type="button"
-        >
-          <Download className="w-4 h-4" />
-          <span>Exportar Únicas</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onExportCsv}
+            disabled={isExportDisabled}
+            className="bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer font-sans"
+            type="button"
+            title="Exportar referências únicas em formato CSV sanitizado"
+          >
+            <Download className="w-4 h-4" />
+            <span>Exportar CSV</span>
+          </button>
+
+          {onExportBibtex && (
+            <button
+              onClick={onExportBibtex}
+              disabled={isExportDisabled}
+              className="bg-white hover:bg-slate-50 border border-[#E5E7EB] hover:border-slate-300 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 disabled:cursor-not-allowed text-[#1F2937] text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer font-sans"
+              type="button"
+              title="Exportar referências únicas em formato BibTeX padronizado (.bib)"
+            >
+              <Download className="w-4 h-4 text-purple-600" />
+              <span>Exportar .bib</span>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

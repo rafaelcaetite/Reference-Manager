@@ -21,7 +21,7 @@ export const FileUploaderCard: React.FC<FileUploaderCardProps> = ({
     <div className="rounded-2xl border border-[#E5E7EB] p-4 space-y-4 bg-[#F8F9FA]">
       <div className="flex items-center justify-between">
         <h2 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider font-sans">
-          1. Importar Bases Bibliográficas (.csv)
+          1. Importar Bases (.csv, .bib, .tex)
         </h2>
         {isParsing && <RefreshCw className="w-3.5 h-3.5 text-[#2563EB] animate-spin" />}
       </div>
@@ -33,32 +33,55 @@ export const FileUploaderCard: React.FC<FileUploaderCardProps> = ({
             Bases carregadas ({uploadedFiles.length}):
           </p>
           <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-            {uploadedFiles.map((file) => (
-              <div
-                key={file.id}
-                className="bg-white rounded-xl border border-[#E5E7EB] p-2.5 flex items-center justify-between gap-3 shadow-xs relative group"
-              >
-                <div className="flex items-center gap-2.5 overflow-hidden">
-                  <FileText className="w-4 h-4 text-[#2563EB] shrink-0" />
-                  <div className="overflow-hidden">
-                    <p className="text-xs font-bold text-[#1F2937] truncate font-mono" title={file.name}>
-                      {file.name}
-                    </p>
-                    <p className="text-[10px] text-[#6B7280] font-mono">
-                      {(file.size / 1024).toFixed(1)} KB | {file.rowCount} registros
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => onDeleteFile(file.id)}
-                  className="p-1 text-[#6B7280] hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer shrink-0"
-                  title="Remover arquivo"
-                  type="button"
+            {uploadedFiles.map((file) => {
+              const fmt = (
+                file.format ||
+                (file.name.toLowerCase().endsWith(".bib") || file.name.toLowerCase().endsWith(".bibtex")
+                  ? "bib"
+                  : file.name.toLowerCase().endsWith(".tex")
+                  ? "tex"
+                  : "csv")
+              ).toUpperCase();
+
+              const badgeColor =
+                fmt === "BIB"
+                  ? "bg-purple-50 text-purple-700 border-purple-200"
+                  : fmt === "TEX"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-blue-50 text-blue-700 border-blue-200";
+
+              return (
+                <div
+                  key={file.id}
+                  className="bg-white rounded-xl border border-[#E5E7EB] p-2.5 flex items-center justify-between gap-3 shadow-xs relative group"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-center gap-2.5 overflow-hidden">
+                    <FileText className="w-4 h-4 text-[#2563EB] shrink-0" />
+                    <div className="overflow-hidden">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-[9px] font-bold font-mono px-1.5 py-0.5 rounded border uppercase shrink-0 ${badgeColor}`}>
+                          {fmt}
+                        </span>
+                        <p className="text-xs font-bold text-[#1F2937] truncate font-mono" title={file.name}>
+                          {file.name}
+                        </p>
+                      </div>
+                      <p className="text-[10px] text-[#6B7280] font-mono mt-0.5">
+                        {(file.size / 1024).toFixed(1)} KB | {file.rowCount} registros
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => onDeleteFile(file.id)}
+                    className="p-1 text-[#6B7280] hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer shrink-0"
+                    title="Remover arquivo"
+                    type="button"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -70,7 +93,7 @@ export const FileUploaderCard: React.FC<FileUploaderCardProps> = ({
         <input
           type="file"
           multiple
-          accept=".csv"
+          accept=".csv,.bib,.tex,.bibtex"
           onChange={onFileUpload}
           disabled={isParsing}
           className="absolute inset-0 opacity-0 cursor-pointer w-full h-full disabled:cursor-not-allowed"
@@ -79,10 +102,10 @@ export const FileUploaderCard: React.FC<FileUploaderCardProps> = ({
           uploadedFiles.length > 0 ? "w-5 h-5 mb-1" : "w-8 h-8 mb-2"
         }`} />
         <p className={`${uploadedFiles.length > 0 ? "text-xs" : "text-sm"} font-semibold text-[#1F2937] font-sans`}>
-          {uploadedFiles.length > 0 ? "Importar outra base (.CSV)" : "Carregar arquivos .CSV"}
+          {uploadedFiles.length > 0 ? "Importar outra base (.csv, .bib, .tex)" : "Carregar arquivos .csv, .bib, .tex"}
         </p>
         <p className="text-[10px] text-[#6B7280] mt-0.5 font-sans">
-          Arraste arquivos ou clique para selecionar
+          Arraste arquivos CSV, BibTeX ou LaTeX (.tex) ou clique para selecionar
         </p>
       </div>
 

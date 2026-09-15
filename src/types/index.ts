@@ -52,6 +52,7 @@ export interface UploadedFile {
   rowCount: number;
   headers: string[];
   rows: ReferenceRawRow[];
+  format?: "csv" | "bib" | "tex";
 }
 
 export interface NotificationItem {

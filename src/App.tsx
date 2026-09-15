@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ColumnMapping } from "./types";
 import { autoDetectColumnMapping } from "./core/detection";
 import { exportCleanedCsv } from "./core/exportService";
+import { exportToBibtex } from "./core/bibtexExporter";
 
 import { useToast } from "./hooks/useToast";
 import { useReferenceWorkspace } from "./hooks/useReferenceWorkspace";
@@ -126,6 +127,40 @@ export default function App() {
     }
   };
 
+  // Export BibTeX with standardized keys and full attribute retention
+  const handleExportBibtex = () => {
+    if (filteredCleanedItems.length === 0) {
+      showNotification("warning", "Nenhuma referência única encontrada para exportação.");
+      return;
+    }
+
+    try {
+      const records = filteredCleanedItems.map((item) => ({
+        row: item.originalRow as Record<string, string>,
+        originalId: item.id,
+      }));
+      const bibContent = exportToBibtex(records);
+      const blob = new Blob([bibContent], { type: "application/x-bibtex;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const baseName = fileName.replace(/\.(csv|bib|tex|bibtex)$/i, "");
+      link.href = url;
+      link.setAttribute("download", `${baseName || "referencias"}_unicas.bib`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+
+      showNotification(
+        "success",
+        `Exportadas ${filteredCleanedItems.length} referências em BibTeX (.bib) com sucesso.`
+      );
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Falha na exportação BibTeX";
+      showNotification("error", `Erro ao exportar BibTeX: ${msg}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-[#1F2937] flex flex-col font-sans selection:bg-[#E5E7EB]">
       <ToastContainer notifications={notifications} onDismiss={dismissNotification} />
@@ -195,6 +230,7 @@ export default function App() {
                 startYear={startYear}
                 endYear={endYear}
                 onExportCsv={handleExport}
+                onExportBibtex={handleExportBibtex}
                 isExportDisabled={filteredCleanedItems.length === 0}
               />
 

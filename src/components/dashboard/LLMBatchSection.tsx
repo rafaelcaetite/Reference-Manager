@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layers, Download, RefreshCw } from "lucide-react";
+import { Layers, Download, RefreshCw, MessageSquarePlus, Copy, Check, X, Lightbulb } from "lucide-react";
 import { ReferenceItem } from "../../types";
 import { generateLlmBatchesZip } from "../../core/exportService";
 
@@ -21,6 +21,8 @@ export const LLMBatchSection: React.FC<LLMBatchSectionProps> = ({
   const [batchSize, setBatchSize] = useState<number>(10);
   const [batchCount, setBatchCount] = useState<number>(5);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [showContextTip, setShowContextTip] = useState<boolean>(false);
+  const [copiedPrompt, setCopiedPrompt] = useState<boolean>(false);
 
   const targetItems = sourceSelect === "cleaned" ? cleanedItems : allItems;
   const totalRefs = targetItems.length;
@@ -54,6 +56,7 @@ export const LLMBatchSection: React.FC<LLMBatchSectionProps> = ({
         batchCount,
       });
 
+      setShowContextTip(true);
       onNotify(
         "success",
         `Sucesso! Arquivo "batches_para_llm.zip" gerado com ${batchesCreated} lotes de texto.`
@@ -64,6 +67,28 @@ export const LLMBatchSection: React.FC<LLMBatchSectionProps> = ({
     } finally {
       setIsExporting(false);
     }
+  };
+
+  const handleCopyPrompt = () => {
+    const promptText = `Você é um pesquisador sênior conduzindo uma Revisão Sistemática da Literatura (RSL).
+Por favor, analise a lista de referências a seguir (Título e Resumo) e avalie a elegibilidade de cada artigo.
+
+Critérios de Inclusão:
+1. [Inserir critério 1]
+2. [Inserir critério 2]
+
+Critérios de Exclusão:
+1. [Inserir critério 1]
+
+Para cada artigo, responda no formato:
+- [ID]: INCLUÍDO ou EXCLUÍDO (Justificativa concisa baseada nos critérios).
+
+Aqui está o lote de referências para triagem:`;
+
+    navigator.clipboard.writeText(promptText);
+    setCopiedPrompt(true);
+    setTimeout(() => setCopiedPrompt(false), 2500);
+    onNotify("success", "Prompt de triagem copiado para a área de transferência.");
   };
 
   return (
@@ -223,6 +248,80 @@ export const LLMBatchSection: React.FC<LLMBatchSectionProps> = ({
             <span>{isExporting ? "Gerando Pacote..." : "Gerar e Baixar Lotes (.ZIP)"}</span>
           </button>
         </div>
+
+        {/* Tip trigger */}
+        <div className="flex items-center justify-between pt-1">
+          <button
+            type="button"
+            onClick={() => setShowContextTip(true)}
+            className="text-[11px] font-semibold text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1.5 cursor-pointer font-sans"
+          >
+            <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+            <span>Dica de Janela de Contexto: Por que usar uma nova conversa para cada lote?</span>
+          </button>
+        </div>
+
+        {/* Floating Context Window Guidance Modal */}
+        {showContextTip && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-2xl max-w-lg w-full p-6 space-y-4 relative">
+              <button
+                type="button"
+                onClick={() => setShowContextTip(false)}
+                className="absolute top-4 right-4 text-[#9CA3AF] hover:text-[#4B5563] p-1 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+                title="Fechar recomendação"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#2563EB] shrink-0">
+                  <MessageSquarePlus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[#1F2937] font-sans">
+                    Recomendação: Abra um Novo Chat para Cada Lote
+                  </h4>
+                  <p className="text-[11px] text-[#6B7280] font-sans">
+                    Preservação de fidelidade da janela de contexto em LLMs
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 space-y-2 text-xs text-amber-900 font-sans leading-relaxed">
+                <p className="font-semibold flex items-center gap-1.5 text-amber-950">
+                  <Lightbulb className="w-4 h-4 text-amber-600 shrink-0" />
+                  Por que reiniciar o chat a cada lote de referências?
+                </p>
+                <p>
+                  Modelos de Linguagem (ChatGPT, Claude, Gemini, DeepSeek) operam com janelas de atenção que se saturam com históricos extensos. Conforme a conversa acumula centenas de resumos de lotes anteriores, a IA sofre de <strong>prompt drift</strong> e redução de precisão (&quot;lost in the middle&quot;).
+                </p>
+                <p>
+                  <strong>Diretriz Sênior:</strong> Envie cada arquivo <code>.txt</code> gerado em uma <strong>nova conversa (novo chat)</strong>, acompanhado do seu prompt com os critérios de inclusão e exclusão. Isso assegura que cada lote seja avaliado com 100% de consistência metodológica e zero viés cumulativo.
+                </p>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={handleCopyPrompt}
+                  className="text-xs font-semibold px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-[#1F2937] rounded-xl transition flex items-center gap-1.5 cursor-pointer font-sans"
+                >
+                  {copiedPrompt ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-[#6B7280]" />}
+                  <span>{copiedPrompt ? "Copiado!" : "Copiar Prompt Padrão"}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowContextTip(false)}
+                  className="text-xs font-bold px-5 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl transition cursor-pointer font-sans shadow-xs"
+                >
+                  Entendido
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
